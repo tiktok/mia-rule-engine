@@ -1,0 +1,7 @@
+.DS_Store
+/.idea
+/bazel-*
+/distdir
+/vendor
+~.mocka
+go.work.sum

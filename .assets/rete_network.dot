@@ -1,0 +1,58 @@
+strict digraph "Rete Network" {
+// Node definitions.
+root;
+"$subject.age";
+"< 14";
+"&(3)";
+"fact: $subject.age_status:underage";
+"&(5)";
+"fact: $subject.age_status:underage";
+"< 13";
+"&(8)";
+"fact: $subject.age_status:underage";
+">= 18";
+"fact: $subject.age_status:adult";
+"$subject.geo";
+"= \"KR\"";
+"fact: $subject.age_status:underage";
+"= \"ID\"";
+"fact: $subject.age_status:underage";
+"= \"US\"";
+"fact: $subject.age_status:underage";
+"&(19)";
+"scope: account:kids_mode priority: 1";
+"$subject.age_status";
+"= \"underage\"";
+"scope: account:kids_mode priority: 1";
+"scope: account:banned priority: 2";
+
+// Edge definitions.
+root -> "$subject.age";
+root -> "$subject.geo";
+root -> "$subject.age_status";
+"$subject.age" -> "< 14";
+"$subject.age" -> "< 13";
+"$subject.age" -> ">= 18";
+"< 14" -> "&(3)";
+"< 14" -> "&(5)";
+"&(3)" -> "fact: $subject.age_status:underage";
+"&(3)" -> "fact: $subject.age_status:underage";
+"&(5)" -> "fact: $subject.age_status:underage";
+"&(5)" -> "fact: $subject.age_status:underage";
+"< 13" -> "&(8)";
+"&(8)" -> "fact: $subject.age_status:underage";
+"&(8)" -> "fact: $subject.age_status:underage";
+">= 18" -> "fact: $subject.age_status:adult";
+"$subject.geo" -> "= \"KR\"";
+"$subject.geo" -> "= \"ID\"";
+"$subject.geo" -> "= \"US\"";
+"= \"KR\"" -> "&(3)";
+"= \"ID\"" -> "&(5)";
+"= \"US\"" -> "&(8)";
+"= \"US\"" -> "&(19)";
+"&(19)" -> "scope: account:kids_mode priority: 1";
+"&(19)" -> "scope: account:kids_mode priority: 1";
+"$subject.age_status" -> "= \"underage\"";
+"= \"underage\"" -> "&(19)";
+"= \"underage\"" -> "scope: account:banned priority: 2";
+}
