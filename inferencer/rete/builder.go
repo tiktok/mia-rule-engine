@@ -25,6 +25,7 @@ import (
 	cmpl "github.com/tiktok/mia-rule-engine/parser"
 )
 
+// Builder the struct of building Rete network.
 type Builder struct {
 	root     RootNode
 	typeMap  map[string]*TypeNode
@@ -33,6 +34,7 @@ type Builder struct {
 	termMap  map[string]*TermNode
 }
 
+// NewBuilder returns a new builder object.
 func NewBuilder() Builder {
 	return Builder{
 		root: RootNode{
@@ -46,6 +48,7 @@ func NewBuilder() Builder {
 	}
 }
 
+// AddRule adds new rule into the builder.
 func (builder *Builder) AddRule(rule rule.Rule) {
 	termNode := builder.getOrCreateTermNode(rule)
 	for _, condition := range rule.Conditions() {
@@ -79,6 +82,7 @@ func (builder *Builder) AddRule(rule rule.Rule) {
 	}
 }
 
+// Build return the built Rete network.
 func (builder *Builder) Build() Network {
 	return Network{
 		root: builder.root,

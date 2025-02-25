@@ -22,6 +22,7 @@ import (
 	cmpl "github.com/tiktok/mia-rule-engine/parser"
 )
 
+// Decision is the deserialized decision of rule.
 type Decision struct {
 	assignment cmpl.IAssignmentContext
 	t          DType
@@ -29,6 +30,7 @@ type Decision struct {
 	val        string
 }
 
+// DecisionFromCtx gets the decision from the parsed ANTLR file.
 func DecisionFromCtx(ctx cmpl.IDecisionContext) Decision {
 	return Decision{
 		assignment: ctx.Assignment(),
@@ -38,26 +40,32 @@ func DecisionFromCtx(ctx cmpl.IDecisionContext) Decision {
 	}
 }
 
+// Assignment returns the assignment of decision.
 func (d *Decision) Assignment() cmpl.IAssignmentContext {
 	return d.assignment
 }
 
+// Type returns the decision type.
 func (d *Decision) Type() DType {
 	return d.t
 }
 
+// String returns the serialized decision.
 func (d *Decision) String() string {
 	return fmt.Sprintf("%s: %s", d.t.String(), d.assignment.GetText())
 }
 
+// Key returns the scope domain of the decision.
 func (d *Decision) Key() string {
 	return d.key
 }
 
+// Val returns the scope access of the decision.
 func (d *Decision) Val() string {
 	return d.val
 }
 
+// DType is the decision type.
 type DType int8
 
 const (
@@ -74,6 +82,7 @@ const (
 	Fact
 )
 
+// DTypeFromCtx gets the decision type from the parsed ANTLR file.
 func DTypeFromCtx(ctx cmpl.ITypeContext) DType {
 	switch {
 	case ctx.SCOPE() != nil:
@@ -87,6 +96,7 @@ func DTypeFromCtx(ctx cmpl.ITypeContext) DType {
 	}
 }
 
+// String returns the serialized decision type.
 func (dt DType) String() string {
 	switch dt {
 	case Scope:

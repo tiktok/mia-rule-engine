@@ -20,10 +20,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install default-jdk -y
-          curl -O https://www.antlr.org/download/antlr-4.13.1-complete.jar
-          sudo mv antlr-4.13.1-complete.jar /usr/local/lib/antlr-4.13.1-complete.jar
+          curl -O https://www.antlr.org/download/antlr-4.13.2-complete.jar
+          sudo mv antlr-4.13.1-complete.jar /usr/local/lib/antlr-4.13.2-complete.jar
           echo '#!/bin/bash' | sudo tee /usr/local/bin/antlr > /dev/null
-          echo 'exec java -Xmx500M -cp "/usr/local/lib/antlr-4.13.1-complete.jar:$CLASSPATH" org.antlr.v4.Tool "$@"' | sudo tee -a /usr/local/bin/antlr > /dev/null
+          echo 'exec java -Xmx500M -cp "/usr/local/lib/antlr-4.13.2-complete.jar:$CLASSPATH" org.antlr.v4.Tool "$@"' | sudo tee -a /usr/local/bin/antlr > /dev/null
           sudo chmod +x /usr/local/bin/antlr
 
       - name: Check ANTLR generated files
@@ -48,7 +48,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: 1.23
 
       - name: Check code formatting
         run: |

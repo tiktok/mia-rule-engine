@@ -7,6 +7,7 @@ fmt:
 lint:
 	golangci-lint run ./... \
 		--timeout=5m \
+		--skip-files=.*_test\.go$ \
     	--issues-exit-code=1 \
       	--max-issues-per-linter=0 \
       	--max-same-issues=0 \

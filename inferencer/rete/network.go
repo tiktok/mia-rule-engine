@@ -23,11 +23,13 @@ import (
 	cmpl "github.com/tiktok/mia-rule-engine/parser"
 )
 
+// Input is the struct of inference input of Rete network.
 type Input struct {
 	facts  []*Fact
 	memory *Memory
 }
 
+// NewInput returns a new input object.
 func NewInput(fields []interface{}) *Input {
 	facts := make([]*Fact, 0)
 	for i := 0; i < len(fields); i = i + 2 {
@@ -39,12 +41,13 @@ func NewInput(fields []interface{}) *Input {
 	}
 }
 
-// Network is read-only for concurrency-safe
+// Network is the read-only ReteNetwork for concurrency-safe.
 type Network struct {
 	defaults []rule.Decision
 	root     RootNode
 }
 
+// BuildNetwork returns a new network object based on the input policy (rule set).
 func BuildNetwork(policy string) Network {
 	input := antlr.NewInputStream(policy)
 
@@ -69,15 +72,17 @@ func BuildNetwork(policy string) Network {
 	return network
 }
 
+// Defaults returns the default decisions of the network.
 func (nw *Network) Defaults() []rule.Decision {
 	return nw.defaults
 }
 
+// Root returns the root node of the network.
 func (nw *Network) Root() RootNode {
 	return nw.root
 }
 
-// Accept executes logics to prepare for the infer process
+// Accept executes logics to prepare for the infer process.
 func (nw *Network) Accept(input *Input) {
 	for _, decision := range nw.defaults {
 		switch decision.Type() {
@@ -91,7 +96,7 @@ func (nw *Network) Accept(input *Input) {
 	}
 }
 
-// Infer only supports one extra iteration of new fact to avoid performance issues
+// Infer only supports one extra iteration of new fact to avoid performance issues.
 func (nw *Network) Infer(input *Input) (map[string]*rule.Decision, map[string]*rule.Decision, map[string]*rule.Rule) {
 	agenda := nw.infer(input)
 	if len(agenda.newFacts) > 0 {

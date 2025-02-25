@@ -22,14 +22,17 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 )
 
+// ErrorListener for handling error during ANTLR parsing tree traversing.
 type ErrorListener struct {
 	*antlr.DefaultErrorListener
 }
 
+// NewErrorListener return new error listener object.
 func NewErrorListener() *ErrorListener {
 	return &ErrorListener{}
 }
 
+// SyntaxError handles the syntax error of ANTLR file parsing.
 func (el *ErrorListener) SyntaxError(_ antlr.Recognizer, _ interface{}, line, column int, msg string, e antlr.RecognitionException) {
 	panic(fmt.Errorf("parse failed at line %d:%d - %s with error (%s)", line, column, msg, e))
 }

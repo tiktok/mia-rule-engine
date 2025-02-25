@@ -24,16 +24,19 @@ import (
 	"gonum.org/v1/gonum/graph/simple"
 )
 
+// Graph the virtualization of Rete network.
 type Graph struct {
 	rete.Network
 }
 
+// NewGraph builds a new graph object.
 func NewGraph(network rete.Network) Graph {
 	return Graph{
 		Network: network,
 	}
 }
 
+// Virtualize executes the logics to generate the network metadata for Gonum.
 func (gph *Graph) Virtualize() (string, error) {
 	g := simple.NewDirectedGraph()
 

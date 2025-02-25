@@ -23,15 +23,17 @@ import (
 	cmpl "github.com/tiktok/mia-rule-engine/parser"
 )
 
-// Condition sets AND logic between all comparisons here, and it is OR logic between all conditions
+// Condition sets AND logic between all comparisons here, and it is OR logic between all conditions.
 type Condition struct {
 	expressions []cmpl.IExpressionContext
 }
 
+// Expressions returns the list of expressions of the condition statement.
 func (c Condition) Expressions() []cmpl.IExpressionContext {
 	return c.expressions
 }
 
+// String returns the serialized condition statement.
 func (c Condition) String() string {
 	expressions := make([]string, 0)
 	for _, expression := range c.expressions {
@@ -41,7 +43,7 @@ func (c Condition) String() string {
 	return fmt.Sprintf("[%s]", condition)
 }
 
-// ConditionsFromCtx flattens the OR logics into DNF (Disjunctive Normal Form）
+// ConditionsFromCtx flattens the OR logics into DNF (Disjunctive Normal Form).
 // TODO: need to write full coverage UTs to ensure the logic correctness
 func ConditionsFromCtx(ctx cmpl.IConditionsContext) []Condition {
 	return flattenConditions(ctx)
@@ -82,6 +84,7 @@ func flattenCondition(ctx cmpl.IConditionContext) []Condition {
 	} else {
 		for idx := range ctx.AllExpression() {
 			mergeExpressions(conditionMatrix, ctx.Expression(idx))
+
 			if ctx.Lops(idx) != nil && ctx.Lops(idx).OR() != nil {
 				conditionMatrix = appendNewConditions(conditionMatrix)
 			}
