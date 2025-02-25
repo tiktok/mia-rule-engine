@@ -22,13 +22,14 @@ jobs:
           sudo apt-get install default-jdk -y
           curl -O https://www.antlr.org/download/antlr-4.13.1-complete.jar
           sudo mv antlr-4.13.1-complete.jar /usr/local/lib/antlr-4.13.1-complete.jar
-          echo 'alias antlr="java -Xmx500M -cp \"/usr/local/lib/antlr-4.13.1-complete.jar:$CLASSPATH\" org.antlr.v4.Tool"' >> ~/.bashrc
-          source ~/.bashrc
+          echo '#!/bin/bash' | sudo tee /usr/local/bin/antlr > /dev/null
+          echo 'exec java -Xmx500M -cp "/usr/local/lib/antlr-4.13.1-complete.jar:$CLASSPATH" org.antlr.v4.Tool "$@"' | sudo tee -a /usr/local/bin/antlr > /dev/null
+          sudo chmod +x /usr/local/bin/antlr
 
       - name: Check ANTLR generated files
         run: |
           git status --porcelain
-          bash -c "make antlr"
+          make antlr
           if [[ -n $(git status --porcelain) ]]; then
             echo "❌ Error: ANTLR generated files differ from the committed version. Please run 'make antlr' and commit the changes."
             git diff
