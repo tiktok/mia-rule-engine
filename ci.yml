@@ -1,0 +1,166 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  antlr-check:
+    name: ANTLR Code Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install ANTLR
+        run: |
+          sudo apt-get update
+          sudo apt-get install default-jdk -y
+          curl -O https://www.antlr.org/download/antlr-4.13.1-complete.jar
+          sudo mv antlr-4.13.1-complete.jar /usr/local/lib/antlr-4.13.1-complete.jar
+          echo 'alias antlr="java -Xmx500M -cp \"/usr/local/lib/antlr-4.13.1-complete.jar:$CLASSPATH\" org.antlr.v4.Tool"' >> ~/.bashrc
+          source ~/.bashrc
+
+      - name: Check ANTLR generated files
+        run: |
+          git status --porcelain
+          make antlr
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "❌ Error: ANTLR generated files differ from the committed version. Please run 'make antlr' and commit the changes."
+            git diff
+            exit 1
+          else
+            echo "✅ ANTLR files are up-to-date."
+          fi
+
+  fmt-check:
+    name: Format Code Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+
+      - name: Check code formatting
+        run: |
+          git status --porcelain
+          make fmt
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "❌ Error: Code formatting differs from the committed version. Please run 'make fmt' and commit the changes."
+            git diff
+            exit 1
+          else
+            echo "✅ Code formatting is correct."
+          fi
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23
+
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2
+
+      - name: Lint code
+        run: |
+          if ! make lint; then
+            echo "❌ Error: Lint errors found. Please fix them before committing."
+            exit 1
+          fi
+
+  test:
+    name: Unit Test with Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23
+
+      - name: Run Tests and Check Coverage
+        run: |
+          make test
+          if [ ! -f ".coverage.out" ]; then
+            echo "❌ Error: Coverage file .coverage.out not found."
+            exit 1
+          fi
+
+      - name: Verify Coverage (No Regression)
+        run: |
+          COVERAGE=$(go tool cover -func=.coverage.out | grep total | awk '{print $3}' | tr -d '%')
+          BASELINE=80  # %
+          if (( $(echo "$COVERAGE < $BASELINE" | bc -l) )); then
+            echo "❌ Error: Test coverage $COVERAGE% is below the baseline of $BASELINE%."
+            exit 1
+          else
+            echo "✅ Coverage check passed with $COVERAGE%."
+          fi
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: .coverage.out
+
+  benchmark:
+    name: Benchmark Performance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23
+
+      - name: Run Benchmarks
+        run: make bench
+
+      - name: Check Benchmark Performance (No CPU Regression)
+        run: |
+          if [ ! -f ".benchmark.out" ]; then
+            echo "❌ Error: Benchmark output .benchmark.out not found."
+            exit 1
+          fi
+          CPU_TIME=$(grep -E 'Benchmark.*ns/op' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          BASELINE=1000  # ns/op
+          if [ "$CPU_TIME" -gt "$BASELINE" ]; then
+            echo "❌ Error: Benchmark CPU time ${CPU_TIME}ns/op exceeds the baseline of ${BASELINE}ns/op. Performance regression detected."
+            exit 1
+          else
+            echo "✅ Benchmark performance is within the expected range (${CPU_TIME}ns/op)."
+          fi
+
+      - name: Upload benchmark output
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-output
+          path: .benchmark.out
+
+  check-status:
+    name: Status Check
+    runs-on: ubuntu-latest
+    needs: [antlr-check, fmt-check, lint, test, benchmark]
+    steps:
+      - name: Status Check Passed
+        run: echo "✅ All checks passed!"
