@@ -1,7 +1,6 @@
 package rule
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 
@@ -13,7 +12,7 @@ type Priority struct {
 	val int64
 }
 
-// PriorityFromCtx gets the priority from the parsed ANTLR file.
+// PriorityFromCtx gets the priority from the parsed ANTLR file
 func PriorityFromCtx(ctx cmpl.IPriorityContext) Priority {
 	v := ctx.GetText()
 	val, err := strconv.ParseInt(v, 10, 64)
@@ -28,12 +27,12 @@ func PriorityFromCtx(ctx cmpl.IPriorityContext) Priority {
 	}
 }
 
-// String returns the serialized priority.
+// String returns the serialized priority
 func (d *Priority) String() string {
-	return fmt.Sprintf("%d", d.val)
+	return strconv.FormatInt(d.val, 10)
 }
 
-// Val returns the priority integer value.
+// Val returns the priority integer value
 func (d *Priority) Val() int64 {
 	return d.val
 }

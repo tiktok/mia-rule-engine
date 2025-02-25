@@ -24,40 +24,40 @@ import (
 	"github.com/tiktok/mia-rule-engine/analyzer/rule"
 )
 
-// RootNode the root node of Rete network.
+// RootNode the root node of Rete network
 type RootNode struct {
 	id        string
 	typeNodes map[string]*TypeNode
 }
 
-// String returns the serialized root node.
+// String returns the serialized root node
 func (n *RootNode) String() string {
 	return n.id
 }
 
-// GetTypes returns the type of root node (fact, scope or action).
+// GetTypes returns the type of root node(fact, scope or action)
 func (n *RootNode) GetTypes() map[string]*TypeNode {
 	return n.typeNodes
 }
 
-// TypeNode the type node of Rete network.
+// TypeNode the type node of Rete network
 type TypeNode struct {
 	id         string
 	lhs        string
 	alphaNodes []*AlphaNode
 }
 
-// String returns the serialized type node.
+// String returns the serialized type node
 func (n *TypeNode) String() string {
 	return n.id
 }
 
-// AlphaNodes returns all the alpha nodes the type node infers to.
+// AlphaNodes returns all the alpha nodes the type node infers to
 func (n *TypeNode) AlphaNodes() []*AlphaNode {
 	return n.alphaNodes
 }
 
-// AlphaNode the alpha node of Rete network.
+// AlphaNode the alpha node of Rete network
 type AlphaNode struct {
 	id        string
 	ops       string
@@ -68,21 +68,22 @@ type AlphaNode struct {
 	termNodes []*TermNode
 }
 
-// String returns the serialized alpha node.
+// String returns the serialized alpha node
 func (n *AlphaNode) String() string {
 	return fmt.Sprintf("%s %s", n.ops, n.rhs)
 }
 
-// BetaNodes returns all the beta nodes the alpha node infers to.
+// BetaNodes returns all the beta nodes the alpha node infers to
 func (n *AlphaNode) BetaNodes() []*BetaNode {
 	return n.betaNodes
 }
 
-// TermNodes returns all the terminal nodes the alpha node infers to.
+// TermNodes returns all the terminal nodes the alpha node infers to
 func (n *AlphaNode) TermNodes() []*TermNode {
 	return n.termNodes
 }
 
+// Compare executes the logic to compare the fact with expression
 func (n *AlphaNode) Compare(fact *Fact) bool {
 	lhs := reflect.ValueOf(fact.val)
 

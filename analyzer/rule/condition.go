@@ -23,17 +23,17 @@ import (
 	cmpl "github.com/tiktok/mia-rule-engine/parser"
 )
 
-// Condition sets AND logic between all comparisons here, and it is OR logic between all conditions.
+// Condition sets AND logic between all comparisons here, and it is OR logic between all conditions
 type Condition struct {
 	expressions []cmpl.IExpressionContext
 }
 
-// Expressions returns the list of expressions of the condition statement.
+// Expressions returns the list of expressions of the condition statement
 func (c Condition) Expressions() []cmpl.IExpressionContext {
 	return c.expressions
 }
 
-// String returns the serialized condition statement.
+// String returns the serialized condition statement
 func (c Condition) String() string {
 	expressions := make([]string, 0)
 	for _, expression := range c.expressions {
@@ -43,8 +43,7 @@ func (c Condition) String() string {
 	return fmt.Sprintf("[%s]", condition)
 }
 
-// ConditionsFromCtx flattens the OR logics into DNF (Disjunctive Normal Form).
-// TODO: need to write full coverage UTs to ensure the logic correctness
+// ConditionsFromCtx flattens the OR logics into DNF(Disjunctive Normal Form)
 func ConditionsFromCtx(ctx cmpl.IConditionsContext) []Condition {
 	return flattenConditions(ctx)
 }
@@ -96,9 +95,7 @@ func flattenCondition(ctx cmpl.IConditionContext) []Condition {
 func flattenMatrix(conditionMatrix [][]Condition) []Condition {
 	conditions := make([]Condition, 0)
 	for i := range conditionMatrix {
-		for j := range conditionMatrix[i] {
-			conditions = append(conditions, conditionMatrix[i][j])
-		}
+		conditions = append(conditions, conditionMatrix[i]...)
 	}
 	return conditions
 }
@@ -121,6 +118,7 @@ func mergeConditions(conditionMatrix [][]Condition, conditions []Condition) {
 		exps := make([]cmpl.IExpressionContext, len(expressions))
 		copy(exps, expressions)
 		for j := range conditions {
+			//nolint:makezero
 			combo[idx] = Condition{expressions: append(exps, conditions[j].expressions...)}
 			idx++
 		}

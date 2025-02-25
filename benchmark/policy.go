@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+// Package benchmark is the folder for engine benchmark testing
 package benchmark
 
-const POLICY = `
+const policy = `
 DEFAULT GRANT $scope AS account:normal; 
 ADD $fact AS $subject.age_status:underage WHEN $subject.age < 14 AND ($subject.geo = "KR" OR $subject.geo = "ID");
 ADD $fact AS $subject.age_status:underage WHEN $subject.age < 13 AND $subject.geo = "US";

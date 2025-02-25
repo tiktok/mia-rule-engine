@@ -21,19 +21,19 @@ import (
 	"github.com/tiktok/mia-rule-engine/inferencer/rete"
 )
 
-// Engine the engine for inference.
+// Engine the engine for inference
 type Engine struct {
 	*rete.Network
 }
 
-// Result the output of the inference process.
+// Result the output of the inference process
 type Result struct {
 	Scopes   map[string]*rule.Decision
 	Actions  map[string]*rule.Decision
 	HitRules map[string]*rule.Rule
 }
 
-// New returns a new engine object based on the policy (rule set).
+// New returns a new engine object based on the policy (rule set)
 func New(policy string) *Engine {
 	network := rete.BuildNetwork(policy)
 	return &Engine{
@@ -41,9 +41,9 @@ func New(policy string) *Engine {
 	}
 }
 
-// Eval the key of result map will be the key of assignments, such as the account of account:banned.
-// 1. provide benefit to fastly retrieve the targeted scope(s).
-// 2. avoid duplicated keys of scope to mess the results.
+// Eval the key of result map will be the key of assignments, such as the account of account:banned
+// 1. provide benefit to fastly retrieve the targeted scope(s)
+// 2. avoid duplicated keys of scope to mess the results
 func (e *Engine) Eval(fields ...interface{}) *Result {
 	input := rete.NewInput(fields)
 	e.Accept(input)

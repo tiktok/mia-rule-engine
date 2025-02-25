@@ -1,19 +1,8 @@
-.PHONY: fmt lint antlr test bench
+.PHONY: fmt antlr test bench lint
 
 fmt:
 	gofmt -w ./
 	go mod tidy
-
-lint:
-	golangci-lint run ./... \
-		--timeout=5m \
-		--skip-files=.*_test\.go$ \
-    	--issues-exit-code=1 \
-      	--max-issues-per-linter=0 \
-      	--max-same-issues=0 \
-      	--enable-all \
-      	--exclude-use-default=false \
-      	--concurrency=5
 
 antlr:
 	antlr -Dlanguage=Go parser/cmpl.g4
@@ -29,4 +18,13 @@ test:
 bench:
 	go test -bench=. -benchmem -run=^$$ ./benchmark > .benchmark.out
 
-
+lint:
+	golangci-lint run ./... \
+		--timeout=5m \
+		--skip-files=.*_test\.go$ \
+    	--issues-exit-code=1 \
+      	--max-issues-per-linter=0 \
+      	--max-same-issues=0 \
+      	--enable-all \
+      	--exclude-use-default=false \
+      	--concurrency=5

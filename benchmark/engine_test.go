@@ -23,7 +23,7 @@ import (
 )
 
 func BenchmarkEngine(b *testing.B) {
-	e := engine.New(POLICY)
+	e := engine.New(policy)
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {

@@ -17,23 +17,30 @@
 package rete
 
 import (
+	"log"
+
 	"github.com/antlr4-go/antlr/v4"
 	"github.com/tiktok/mia-rule-engine/analyzer"
 	"github.com/tiktok/mia-rule-engine/analyzer/rule"
 	cmpl "github.com/tiktok/mia-rule-engine/parser"
 )
 
-// Input is the struct of inference input of Rete network.
+// Input is the struct of inference input of Rete network
 type Input struct {
 	facts  []*Fact
 	memory *Memory
 }
 
-// NewInput returns a new input object.
+// NewInput returns a new input object
 func NewInput(fields []interface{}) *Input {
 	facts := make([]*Fact, 0)
-	for i := 0; i < len(fields); i = i + 2 {
-		facts = append(facts, newFact(fields[i].(string), fields[i+1]))
+	for i := 0; i < len(fields); i += 2 {
+		key, ok := fields[i].(string)
+		if !ok {
+			log.Printf("expected string at key, skip...\n")
+			continue
+		}
+		facts = append(facts, newFact(key, fields[i+1]))
 	}
 	return &Input{
 		facts:  facts,
@@ -41,13 +48,13 @@ func NewInput(fields []interface{}) *Input {
 	}
 }
 
-// Network is the read-only ReteNetwork for concurrency-safe.
+// Network is the read-only ReteNetwork for concurrency-safe
 type Network struct {
 	defaults []rule.Decision
 	root     RootNode
 }
 
-// BuildNetwork returns a new network object based on the input policy (rule set).
+// BuildNetwork returns a new network object based on the input policy (rule set)
 func BuildNetwork(policy string) Network {
 	input := antlr.NewInputStream(policy)
 
@@ -72,17 +79,17 @@ func BuildNetwork(policy string) Network {
 	return network
 }
 
-// Defaults returns the default decisions of the network.
+// Defaults returns the default decisions of the network
 func (nw *Network) Defaults() []rule.Decision {
 	return nw.defaults
 }
 
-// Root returns the root node of the network.
+// Root returns the root node of the network
 func (nw *Network) Root() RootNode {
 	return nw.root
 }
 
-// Accept executes logics to prepare for the infer process.
+// Accept executes logics to prepare for the infer process
 func (nw *Network) Accept(input *Input) {
 	for _, decision := range nw.defaults {
 		switch decision.Type() {
@@ -92,11 +99,13 @@ func (nw *Network) Accept(input *Input) {
 			input.memory.agenda.actions[decision.Key()] = &decision
 		case rule.Fact:
 			input.memory.agenda.newFacts = append(input.memory.agenda.newFacts, newFact(decision.Key(), decision.Val()))
+		default:
+			// do nothing
 		}
 	}
 }
 
-// Infer only supports one extra iteration of new fact to avoid performance issues.
+// Infer only supports one extra iteration of new fact to avoid performance issues
 func (nw *Network) Infer(input *Input) (map[string]*rule.Decision, map[string]*rule.Decision, map[string]*rule.Rule) {
 	agenda := nw.infer(input)
 	if len(agenda.newFacts) > 0 {
@@ -107,6 +116,7 @@ func (nw *Network) Infer(input *Input) (map[string]*rule.Decision, map[string]*r
 }
 
 func (nw *Network) infer(input *Input) *Agenda {
+	//nolint:nestif
 	for _, fact := range input.facts {
 		if typeNode, matched := nw.root.GetTypes()[fact.key]; matched {
 			for _, alphaNode := range typeNode.AlphaNodes() {
