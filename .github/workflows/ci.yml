@@ -28,7 +28,7 @@ jobs:
       - name: Check ANTLR generated files
         run: |
           git status --porcelain
-          make antlr
+          bash -c "make antlr"
           if [[ -n $(git status --porcelain) ]]; then
             echo "❌ Error: ANTLR generated files differ from the committed version. Please run 'make antlr' and commit the changes."
             git diff
@@ -107,7 +107,7 @@ jobs:
       - name: Verify Coverage (No Regression)
         run: |
           COVERAGE=$(go tool cover -func=.coverage.out | grep total | awk '{print $3}' | tr -d '%')
-          BASELINE=80  # %
+          BASELINE=95  # %
           if (( $(echo "$COVERAGE < $BASELINE" | bc -l) )); then
             echo "❌ Error: Test coverage $COVERAGE% is below the baseline of $BASELINE%."
             exit 1
@@ -142,13 +142,29 @@ jobs:
             echo "❌ Error: Benchmark output .benchmark.out not found."
             exit 1
           fi
-          CPU_TIME=$(grep -E 'Benchmark.*ns/op' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
-          BASELINE=1000  # ns/op
-          if [ "$CPU_TIME" -gt "$BASELINE" ]; then
-            echo "❌ Error: Benchmark CPU time ${CPU_TIME}ns/op exceeds the baseline of ${BASELINE}ns/op. Performance regression detected."
+          
+          # 提取 BenchmarkEngine-10 和 BenchmarkInference-10 的 ns/op 值
+          ENGINE_NS=$(grep 'BenchmarkEngine-10' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          INFERENCE_NS=$(grep 'BenchmarkInference-10' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          
+          ENGINE_BASELINE=800
+          INFERENCE_BASELINE=500
+          
+          echo "BenchmarkEngine-10: ${ENGINE_NS} ns/op (Baseline: ${ENGINE_BASELINE} ns/op)"
+          echo "BenchmarkInference-10: ${INFERENCE_NS} ns/op (Baseline: ${INFERENCE_BASELINE} ns/op)"
+          
+          if [ "$ENGINE_NS" -gt "$ENGINE_BASELINE" ]; then
+            echo "❌ Error: BenchmarkEngine-10 performance regression. Current: ${ENGINE_NS} ns/op, Baseline: ${ENGINE_BASELINE} ns/op."
             exit 1
           else
-            echo "✅ Benchmark performance is within the expected range (${CPU_TIME}ns/op)."
+            echo "✅ BenchmarkEngine-10 performance is within the expected range."
+          fi
+          
+          if [ "$INFERENCE_NS" -gt "$INFERENCE_BASELINE" ]; then
+            echo "❌ Error: BenchmarkInference-10 performance regression. Current: ${INFERENCE_NS} ns/op, Baseline: ${INFERENCE_BASELINE} ns/op."
+            exit 1
+          else
+            echo "✅ BenchmarkInference-10 performance is within the expected range."
           fi
 
       - name: Upload benchmark output
