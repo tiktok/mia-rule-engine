@@ -159,8 +159,8 @@ jobs:
           fi
           
           # lower perform in Github runner
-          ENGINE_BASELINE=1500
-          INFERENCE_BASELINE=1300
+          ENGINE_BASELINE=1350
+          INFERENCE_BASELINE=1150
 
           echo "BenchmarkEngine: ${ENGINE_NS} ns/op (Baseline: ${ENGINE_BASELINE} ns/op)"
           echo "BenchmarkInference: ${INFERENCE_NS} ns/op (Baseline: ${INFERENCE_BASELINE} ns/op)"
