@@ -143,19 +143,10 @@ jobs:
           go-version: 1.23
 
       - name: Run Benchmarks
-        run: |
-          pwd
-          ls -lah
-          make bench || (echo "❌ Error: make bench failed" && exit 1)
-          ls -lah
+        run: make bench
 
       - name: Check Benchmark Performance (No CPU Regression)
         run: |
-          if [ ! -f ".benchmark.out" ]; then
-            echo "❌ Error: Benchmark output .benchmark.out not found."
-            exit 1
-          fi
-
           ENGINE_NS=$(grep 'BenchmarkEngine-10' .benchmark.out | awk '{print $3}' | grep -oE '[0-9]+')
           INFERENCE_NS=$(grep 'BenchmarkInference-10' .benchmark.out | awk '{print $3}' | grep -oE '[0-9]+')
 
