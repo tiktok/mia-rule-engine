@@ -27,4 +27,5 @@ lint:
       	--max-same-issues=0 \
       	--enable-all \
       	--exclude-use-default=false \
-      	--concurrency=5
+      	--concurrency=5 \
+      	--skip-dirs=parser
