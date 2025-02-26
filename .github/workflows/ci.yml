@@ -147,35 +147,37 @@ jobs:
 
       - name: Check Benchmark Performance (No CPU Regression)
         run: |
-          ENGINE_NS=$(grep 'BenchmarkEngine-10' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
-          INFERENCE_NS=$(grep 'BenchmarkInference-10' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          cat .benchmark.out
+          ENGINE_NS=$(grep 'BenchmarkEngine' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          INFERENCE_NS=$(grep 'BenchmarkInference' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          echo $ENGINE_NS
           if [ -z "$ENGINE_NS" ]; then
-            echo "❌ Error: Failed to extract BenchmarkEngine-10 ns/op value from .benchmark.out."
+            echo "❌ Error: Failed to extract BenchmarkEngine ns/op value from .benchmark.out."
             exit 1
           fi
           if [ -z "$INFERENCE_NS" ]; then
-            echo "❌ Error: Failed to extract BenchmarkInference-10 ns/op value from .benchmark.out."
+            echo "❌ Error: Failed to extract BenchmarkInference ns/op value from .benchmark.out."
             exit 1
           fi
 
           ENGINE_BASELINE=800
           INFERENCE_BASELINE=500
 
-          echo "BenchmarkEngine-10: ${ENGINE_NS} ns/op (Baseline: ${ENGINE_BASELINE} ns/op)"
-          echo "BenchmarkInference-10: ${INFERENCE_NS} ns/op (Baseline: ${INFERENCE_BASELINE} ns/op)"
+          echo "BenchmarkEngine: ${ENGINE_NS} ns/op (Baseline: ${ENGINE_BASELINE} ns/op)"
+          echo "BenchmarkInference: ${INFERENCE_NS} ns/op (Baseline: ${INFERENCE_BASELINE} ns/op)"
 
           if [ "$ENGINE_NS" -gt "$ENGINE_BASELINE" ]; then
             echo "❌ Error: BenchmarkEngine-10 performance regression. Current: ${ENGINE_NS} ns/op, Baseline: ${ENGINE_BASELINE} ns/op."
             exit 1
           else
-            echo "✅ BenchmarkEngine-10 performance is within the expected range."
+            echo "✅ BenchmarkEngine performance is within the expected range."
           fi
 
           if [ "$INFERENCE_NS" -gt "$INFERENCE_BASELINE" ]; then
             echo "❌ Error: BenchmarkInference-10 performance regression. Current: ${INFERENCE_NS} ns/op, Baseline: ${INFERENCE_BASELINE} ns/op."
             exit 1
           else
-            echo "✅ BenchmarkInference-10 performance is within the expected range."
+            echo "✅ BenchmarkInference performance is within the expected range."
           fi
 
       - name: Upload benchmark output
