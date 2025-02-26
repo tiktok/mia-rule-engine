@@ -78,6 +78,9 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2
 
+      - name: Install dependencies
+        run: go mod tidy
+
       - name: Lint code
         run: |
           if ! make lint; then
