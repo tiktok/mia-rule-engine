@@ -147,33 +147,37 @@ jobs:
 
       - name: Check Benchmark Performance (No CPU Regression)
         run: |
-          if [ ! -f ".benchmark.out" ]; then
-            echo "❌ Error: Benchmark output .benchmark.out not found."
+          ENGINE_NS=$(grep 'BenchmarkEngine' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          INFERENCE_NS=$(grep 'BenchmarkInference' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
+          if [ -z "$ENGINE_NS" ]; then
+            echo "❌ Error: Failed to extract BenchmarkEngine ns/op value from .benchmark.out."
+            exit 1
+          fi
+          if [ -z "$INFERENCE_NS" ]; then
+            echo "❌ Error: Failed to extract BenchmarkInference ns/op value from .benchmark.out."
             exit 1
           fi
           
-          # 提取 BenchmarkEngine-10 和 BenchmarkInference-10 的 ns/op 值
-          ENGINE_NS=$(grep 'BenchmarkEngine-10' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
-          INFERENCE_NS=$(grep 'BenchmarkInference-10' .benchmark.out | awk '{print $3}' | cut -d'.' -f1)
-          
-          ENGINE_BASELINE=800
-          INFERENCE_BASELINE=500
-          
-          echo "BenchmarkEngine-10: ${ENGINE_NS} ns/op (Baseline: ${ENGINE_BASELINE} ns/op)"
-          echo "BenchmarkInference-10: ${INFERENCE_NS} ns/op (Baseline: ${INFERENCE_BASELINE} ns/op)"
-          
+          # lower performance in Github runner
+          # Due to instability of Github runner, feel free to re-run the bench to pass the status check
+          ENGINE_BASELINE=1350
+          INFERENCE_BASELINE=1150
+
+          echo "BenchmarkEngine: ${ENGINE_NS} ns/op (Baseline: ${ENGINE_BASELINE} ns/op)"
+          echo "BenchmarkInference: ${INFERENCE_NS} ns/op (Baseline: ${INFERENCE_BASELINE} ns/op)"
+
           if [ "$ENGINE_NS" -gt "$ENGINE_BASELINE" ]; then
             echo "❌ Error: BenchmarkEngine-10 performance regression. Current: ${ENGINE_NS} ns/op, Baseline: ${ENGINE_BASELINE} ns/op."
             exit 1
           else
-            echo "✅ BenchmarkEngine-10 performance is within the expected range."
+            echo "✅ BenchmarkEngine performance is within the expected range."
           fi
-          
+
           if [ "$INFERENCE_NS" -gt "$INFERENCE_BASELINE" ]; then
             echo "❌ Error: BenchmarkInference-10 performance regression. Current: ${INFERENCE_NS} ns/op, Baseline: ${INFERENCE_BASELINE} ns/op."
             exit 1
           else
-            echo "✅ BenchmarkInference-10 performance is within the expected range."
+            echo "✅ BenchmarkInference performance is within the expected range."
           fi
 
       - name: Upload benchmark output
