@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// Package rule
+// Package rule is the rule inference logics of each component of the rule
+//
 // - Each Condition is the comparisons connected with AND logic
 // - One condition is possible to consist of only one comparison
 // - The comparisons with OR logic will be flattened and decoupled into different conditions

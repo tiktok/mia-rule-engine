@@ -1,0 +1,9 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/tiktok/mia-rule-engine/benchmark
+cpu: Apple M1 Pro
+BenchmarkAnalyze-10      	    1965	    510456 ns/op	  532108 B/op	    9741 allocs/op
+BenchmarkEngine-10       	 1370509	       826.1 ns/op	    1216 B/op	      22 allocs/op
+BenchmarkInference-10    	 2216474	       508.6 ns/op	     744 B/op	       8 allocs/op
+PASS
+ok  	github.com/tiktok/mia-rule-engine/benchmark	6.199s

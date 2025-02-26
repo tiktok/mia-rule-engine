@@ -1,12 +1,31 @@
-format:
+.PHONY: fmt antlr test bench lint
+
+fmt:
 	gofmt -w ./
 	go mod tidy
 
-build:
-	go build ./...
-
-gen-antlr:
+antlr:
 	antlr -Dlanguage=Go parser/cmpl.g4
 
 test:
-	IS_UNIT_TEST_ENV=1 go test ./... -gcflags="all=-N -l" -count=1 -covermode=count -coverprofile=.coverage.out
+	go test ./... \
+		--timeout=5m \
+		-gcflags="all=-N -l" \
+		-count=1 \
+		-covermode=count \
+		-coverprofile=.coverage.out
+
+bench:
+	go test -bench=. -benchmem -run=^$$ ./benchmark > .benchmark.out
+
+lint:
+	golangci-lint run ./... \
+		--timeout=5m \
+		--skip-files=.*_test\.go$ \
+    	--issues-exit-code=1 \
+      	--max-issues-per-linter=0 \
+      	--max-same-issues=0 \
+      	--enable-all \
+      	--exclude-use-default=false \
+      	--concurrency=5 \
+      	--skip-dirs=parser

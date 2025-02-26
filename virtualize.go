@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+// Package main
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"runtime/debug"
 
@@ -32,7 +33,7 @@ import (
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf("\nParsing error: %v\n", r)
+			log.Printf("parsing error: %v\n", r)
 			debug.PrintStack()
 		}
 	}()
@@ -52,7 +53,11 @@ GRANT $scope AS account:banned WHEN $subject.age_status = "underage" PRIORITY 2;
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Printf("failed to close file: %v\n", err)
+		}
+	}()
 
 	// Write string to file
 	_, err = f.WriteString(data)

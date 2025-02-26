@@ -24,33 +24,40 @@ import (
 	"github.com/tiktok/mia-rule-engine/analyzer/rule"
 )
 
+// RootNode the root node of Rete network
 type RootNode struct {
 	id        string
 	typeNodes map[string]*TypeNode
 }
 
+// String returns the serialized root node
 func (n *RootNode) String() string {
 	return n.id
 }
 
+// GetTypes returns the type of root node(fact, scope or action)
 func (n *RootNode) GetTypes() map[string]*TypeNode {
 	return n.typeNodes
 }
 
+// TypeNode the type node of Rete network
 type TypeNode struct {
 	id         string
 	lhs        string
 	alphaNodes []*AlphaNode
 }
 
+// String returns the serialized type node
 func (n *TypeNode) String() string {
 	return n.id
 }
 
+// AlphaNodes returns all the alpha nodes the type node infers to
 func (n *TypeNode) AlphaNodes() []*AlphaNode {
 	return n.alphaNodes
 }
 
+// AlphaNode the alpha node of Rete network
 type AlphaNode struct {
 	id        string
 	ops       string
@@ -61,18 +68,22 @@ type AlphaNode struct {
 	termNodes []*TermNode
 }
 
+// String returns the serialized alpha node
 func (n *AlphaNode) String() string {
 	return fmt.Sprintf("%s %s", n.ops, n.rhs)
 }
 
+// BetaNodes returns all the beta nodes the alpha node infers to
 func (n *AlphaNode) BetaNodes() []*BetaNode {
 	return n.betaNodes
 }
 
+// TermNodes returns all the terminal nodes the alpha node infers to
 func (n *AlphaNode) TermNodes() []*TermNode {
 	return n.termNodes
 }
 
+// Compare executes the logic to compare the fact with expression
 func (n *AlphaNode) Compare(fact *Fact) bool {
 	lhs := reflect.ValueOf(fact.val)
 
@@ -153,25 +164,30 @@ func (n *AlphaNode) compareFloat(lhs float64) bool {
 	}
 }
 
+// BetaNode the beta node of Rete network
 type BetaNode struct {
 	id        string
 	degree    int64
 	termNodes []*TermNode
 }
 
+// String returns the serialized beta node
 func (n *BetaNode) String() string {
 	return n.id
 }
 
+// TermNodes returns all the terminal nodes the beta node infers to
 func (n *BetaNode) TermNodes() []*TermNode {
 	return n.termNodes
 }
 
+// TermNode the terminal node of Rete network
 type TermNode struct {
 	id   string
 	rule *rule.Rule
 }
 
+// String returns the serialized terminal node
 func (n *TermNode) String() string {
 	decision := n.rule.Decision()
 	if n.rule.Priority() != nil {
@@ -180,6 +196,7 @@ func (n *TermNode) String() string {
 	return decision.String()
 }
 
+// Fact the user input data for inference
 type Fact struct {
 	key string
 	val interface{}

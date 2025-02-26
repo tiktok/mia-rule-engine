@@ -28,7 +28,7 @@ import (
 func BenchmarkAnalyze(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		if err := analyze(POLICY); err != nil {
+		if err := analyze(policy); err != nil {
 			b.Fatalf("Parsing failed: %v", err)
 		}
 	}

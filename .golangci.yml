@@ -1,0 +1,11 @@
+linters:
+  disable:
+    - wsl
+    - varnamelen
+    - nlreturn
+    - lll
+    - depguard
+    - exhaustive
+    - exhaustruct
+    - godot
+    - ireturn

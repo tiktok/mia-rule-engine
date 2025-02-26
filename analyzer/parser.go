@@ -21,12 +21,14 @@ import (
 	cmpl "github.com/tiktok/mia-rule-engine/parser"
 )
 
+// Parser the parser to parse ANTLR file and store the details
 type Parser struct {
 	*cmpl.BasecmplListener
 	defaults []rule.Decision
 	rules    []rule.Rule
 }
 
+// NewParser return the new parser object
 func NewParser() *Parser {
 	return &Parser{
 		defaults: make([]rule.Decision, 0),
@@ -34,18 +36,22 @@ func NewParser() *Parser {
 	}
 }
 
+// EnterDefault handles the parsing logics of default statement
 func (pl *Parser) EnterDefault(ctx *cmpl.DefaultContext) {
 	pl.defaults = append(pl.defaults, rule.DecisionFromCtx(ctx.Decision()))
 }
 
+// EnterRule handles the parsing logics of rule statement
 func (pl *Parser) EnterRule(ctx *cmpl.RuleContext) {
 	pl.rules = append(pl.rules, rule.FromCtx(ctx))
 }
 
+// Defaults returns the default decisions
 func (pl *Parser) Defaults() []rule.Decision {
 	return pl.defaults
 }
 
+// Rules returns the rules.
 func (pl *Parser) Rules() []rule.Rule {
 	return pl.rules
 }

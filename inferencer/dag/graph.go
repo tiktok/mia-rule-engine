@@ -17,23 +17,29 @@
 package dag
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/tiktok/mia-rule-engine/inferencer/rete"
 	"gonum.org/v1/gonum/graph/encoding/dot"
 	"gonum.org/v1/gonum/graph/simple"
 )
 
+// ErrGenDotCode the error thrown when fails to generate the dot code for virtualization
+var ErrGenDotCode = errors.New("failed to generate dot code for the graph")
+
+// Graph the virtualization of Rete network
 type Graph struct {
 	rete.Network
 }
 
+// NewGraph builds a new graph object
 func NewGraph(network rete.Network) Graph {
 	return Graph{
 		Network: network,
 	}
 }
 
+// Virtualize executes the logics to generate the network metadata for Gonum
 func (gph *Graph) Virtualize() (string, error) {
 	g := simple.NewDirectedGraph()
 
@@ -79,7 +85,7 @@ func (gph *Graph) Virtualize() (string, error) {
 
 	data, err := dot.Marshal(g, "Rete Network", "", "")
 	if err != nil {
-		return "", fmt.Errorf("failed to generate dot code for the graph")
+		return "", ErrGenDotCode
 	}
 	return string(data), nil
 }

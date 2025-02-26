@@ -14,25 +14,5 @@
  * limitations under the License.
  */
 
-package benchmark
-
-import (
-	"testing"
-
-	"github.com/tiktok/mia-rule-engine/inferencer/rete"
-)
-
-func BenchmarkInference(b *testing.B) {
-	network := rete.BuildNetwork(policy)
-	inputs := make([]*rete.Input, b.N)
-	for i := 0; i < b.N; i++ {
-		inputs[i] = rete.NewInput([]interface{}{
-			"$subject.age", 13, "$subject.geo", "KR",
-		})
-	}
-	b.ResetTimer()
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		network.Infer(inputs[i])
-	}
-}
+// Package rete is for assembling the logics to create the Rete network for inference
+package rete

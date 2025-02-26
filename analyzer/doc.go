@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// Package analyzer
+// Package analyzer consists of the logics to analyze the AST from ANTLR file
+//
 // - It leverages the ANTLR capability to parse the DSL into ASTs
 // - Traversing the generated ASTs, analyze the conditions and generate the Rete network
 package analyzer

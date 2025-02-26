@@ -21,16 +21,19 @@ import (
 	"github.com/tiktok/mia-rule-engine/inferencer/rete"
 )
 
+// Engine the engine for inference
 type Engine struct {
 	*rete.Network
 }
 
+// Result the output of the inference process
 type Result struct {
 	Scopes   map[string]*rule.Decision
 	Actions  map[string]*rule.Decision
 	HitRules map[string]*rule.Rule
 }
 
+// New returns a new engine object based on the policy (rule set)
 func New(policy string) *Engine {
 	network := rete.BuildNetwork(policy)
 	return &Engine{

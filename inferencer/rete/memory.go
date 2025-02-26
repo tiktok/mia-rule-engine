@@ -22,11 +22,13 @@ import (
 	"github.com/tiktok/mia-rule-engine/analyzer/rule"
 )
 
+// Memory uses to store the intermediate states of inference process
 type Memory struct {
 	state  *State
 	agenda *Agenda
 }
 
+// NewMemory returns a new memory object
 func NewMemory() *Memory {
 	return &Memory{
 		state:  newState(),
@@ -34,6 +36,7 @@ func NewMemory() *Memory {
 	}
 }
 
+// Agenda stores the inference results for output return
 type Agenda struct {
 	scopes   map[string]*rule.Decision
 	actions  map[string]*rule.Decision
@@ -41,6 +44,7 @@ type Agenda struct {
 	newFacts []*Fact // intermediate states
 }
 
+// NewAgenda returns a new agenda object
 func NewAgenda() *Agenda {
 	return &Agenda{
 		scopes:   make(map[string]*rule.Decision),
@@ -50,6 +54,7 @@ func NewAgenda() *Agenda {
 	}
 }
 
+// String return the serialized agenda
 func (a *Agenda) String() string {
 	str := "[agenda]\n"
 	for _, scope := range a.scopes {
@@ -64,6 +69,7 @@ func (a *Agenda) String() string {
 	return str
 }
 
+// State stores the Rete network inference states
 type State struct {
 	betas map[*BetaNode]int64
 }
