@@ -143,7 +143,11 @@ jobs:
           go-version: 1.23
 
       - name: Run Benchmarks
-        run: make bench
+        run: |
+          pwd
+          ls -lah
+          make bench || (echo "❌ Error: make bench failed" && exit 1)
+          ls -lah
 
       - name: Check Benchmark Performance (No CPU Regression)
         run: |
