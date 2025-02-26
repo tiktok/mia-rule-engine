@@ -8,5 +8,4 @@ linters:
     - exhaustive
     - exhaustruct
     - godot
-    - err113
     - ireturn

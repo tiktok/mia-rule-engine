@@ -17,10 +17,14 @@
 package analyzer
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/antlr4-go/antlr/v4"
 )
+
+// ErrParseFailed refers to the ANTLR file parse failure
+var ErrParseFailed = errors.New("parse failed")
 
 // ErrorListener for handling error during ANTLR parsing tree traversing
 type ErrorListener struct {
@@ -34,5 +38,5 @@ func NewErrorListener() *ErrorListener {
 
 // SyntaxError handles the syntax error of ANTLR file parsing
 func (el *ErrorListener) SyntaxError(_ antlr.Recognizer, _ interface{}, line, column int, msg string, e antlr.RecognitionException) {
-	panic(fmt.Errorf("parse failed at line %d:%d - %s with error (%s)", line, column, msg, e))
+	panic(fmt.Errorf("%w at line %d:%d - %s with error (%v)", ErrParseFailed, line, column, msg, e))
 }
