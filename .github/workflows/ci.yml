@@ -158,7 +158,8 @@ jobs:
             exit 1
           fi
           
-          # lower perform in Github runner
+          # lower performance in Github runner
+          # Due to instability of Github runner, feel free to re-run the bench to pass the status check
           ENGINE_BASELINE=1350
           INFERENCE_BASELINE=1150
 
