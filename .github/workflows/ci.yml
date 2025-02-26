@@ -149,7 +149,7 @@ jobs:
         run: |
           ENGINE_NS=$(grep 'BenchmarkEngine-10' .benchmark.out | awk '{print $3}' | grep -oE '[0-9]+')
           INFERENCE_NS=$(grep 'BenchmarkInference-10' .benchmark.out | awk '{print $3}' | grep -oE '[0-9]+')
-
+          set +e
           if [ -z "$ENGINE_NS" ]; then
             echo "❌ Error: Failed to extract BenchmarkEngine-10 ns/op value from .benchmark.out."
             exit 1
@@ -158,6 +158,7 @@ jobs:
             echo "❌ Error: Failed to extract BenchmarkInference-10 ns/op value from .benchmark.out."
             exit 1
           fi
+          set -e
 
           ENGINE_BASELINE=800
           INFERENCE_BASELINE=500
